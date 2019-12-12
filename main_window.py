@@ -114,10 +114,12 @@ class MainWindow(QMainWindow):
             self.setStyleSheet("background-color: #2D2D30; color: white;")
             self.options_window.setStyleSheet("background-color: #2D2D30; color: white;")
             self.log_window.setStyleSheet("background-color: #2D2D30; color: white;")
+            self.docked.setStyleSheet("background-color: #2D2D30; color: white;")
         else:
             self.setStyleSheet("background-color: #FFFFFF; color: black;")
             self.options_window.setStyleSheet("background-color: #FFFFFF; color: black;")
             self.log_window.setStyleSheet("background-color: #FFFFFF; color: black;")
+            self.docked.setStyleSheet("background-color: #FFFFFF; color: black;")
 
 
 if __name__ == '__main__':

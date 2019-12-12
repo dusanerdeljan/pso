@@ -204,7 +204,7 @@ class Window(QWidget):
         self.spin_box = QSpinBox()
         self.spin_box.setMinimum(2)
         self.spin_box.setMaximum(10)
-        self.spin_box.setValue(2)
+        self.spin_box.setValue(10)
 
         v_box = QVBoxLayout()
 

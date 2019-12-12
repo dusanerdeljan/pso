@@ -119,8 +119,8 @@ class MainWindow(QMainWindow):
             self.log_window.setStyleSheet("background-color: #FFFFFF; color: black;")
 
 
-
 if __name__ == '__main__':
+    QApplication.setStyle("Fusion")
     app = QApplication(sys.argv)
     w = MainWindow()
     sys.exit(app.exec_())

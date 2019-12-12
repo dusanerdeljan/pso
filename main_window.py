@@ -26,7 +26,9 @@ from window import Window
 from log_window import LogWindow
 from math import inf
 from Benchmark import ackley, griewank, michalewicz, easom
+import matplotlib.pyplot as plt
 from PSO import PSO
+from Test import benchmark
 
 
 class MainWindow(QMainWindow):
@@ -36,7 +38,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.functions = [ackley, griewank, michalewicz, easom]
+        self.functions = [ackley, griewank, michalewicz]
 
         self.options_window = Window()
         self.scroll_area = QScrollArea()
@@ -71,42 +73,65 @@ class MainWindow(QMainWindow):
         self.log_window.run_btn.clicked.connect(self.create_options)
         self.setStyleSheet("background-color: #FFFFFF; color: black;")
 
-    def create_options(self):
-        self.options = PSO.Options()
-        self.options.plot = self.options_window.plot_box.isChecked()
-        self.options.log = self.options_window.log_box.isChecked()
-        self.dimension = self.options_window.spin_box.value()
-        self.function = self.functions[self.options_window.combo_box.currentIndex()]
+    def log_pso_algorithm(self, iteration, global_best):
+        self.log_window.text_area.append("Iter #{}, GBEST: {}".format(iteration, global_best))
 
+    def create_options(self):
+        self.log_window.text_area.clear()
+        self.log_window.text_area.append("Optimization process started. Please wait...")
+        dimension = self.options_window.spin_box.value()
+        objfunc = self.functions[self.options_window.combo_box.currentIndex()]
+        function = self.options_window.combo_box.currentText()
+        options = self.load_options()
+
+        global_best, global_best_position, history = benchmark(objfunc, function, dimension, options, self.log_pso_algorithm)
+        self.log_window.text_area.append("Optimization process finished.")
+        self.log_window.text_area.append("f(x*) = {}".format(global_best))
+        self.log_window.text_area.append("x* = ")
+        for x in global_best_position:
+            self.log_window.text_area.append("  {}".format(x))
+
+        if options.plot:
+            plt.scatter([_ for _ in range(1, options.niter + 1)], history, marker='x')
+            plt.title("{} function".format(function))
+            plt.xlabel("Iteration")
+            plt.ylabel("Global best")
+            plt.show()
+
+    def load_options(self):
+        options = PSO.Options()
+        options.plot = self.options_window.plot_box.isChecked()
+        options.log = self.options_window.log_box.isChecked()
         if not self.options_window.default_npart.isChecked():
-            self.options.npart = int(self.options_window.npart_input.text())
+            options.npart = int(self.options_window.npart_input.text())
 
         if not self.options_window.default_niter.isChecked():
-            self.options.niter = int(self.options_window.niter_input.text())
+            options.niter = int(self.options_window.niter_input.text())
 
         if not self.options_window.default_ind_best.isChecked():
-            self.options.cpi = float(self.options_window.ind_best_start_input.text())
-            self.options.cpf = float(self.options_window.ind_best_end_input.text())
+            options.cpi = float(self.options_window.ind_best_start_input.text())
+            options.cpf = float(self.options_window.ind_best_end_input.text())
 
         if not self.options_window.default_global_best.isChecked():
-            self.options.cgi = float(self.options_window.global_best_start_input.text())
-            self.options.cgf = float(self.options_window.global_best_end_input.text())
+            options.cgi = float(self.options_window.global_best_start_input.text())
+            options.cgf = float(self.options_window.global_best_end_input.text())
 
         if not self.options_window.default_inertia.isChecked():
-            self.options.wi = float(self.options_window.inertia_start_input.text())
-            self.options.wf = float(self.options_window.inertia_end_input.text())
+            options.wi = float(self.options_window.inertia_start_input.text())
+            options.wf = float(self.options_window.inertia_end_input.text())
 
         if not self.options_window.default_v_max.isChecked():
-            self.options.vmax = int(self.options_window.v_max_input.text())
+            options.vmax = int(self.options_window.v_max_input.text())
 
         if not self.options_window.default_init_offset.isChecked():
-            self.options.initoffset = int(self.options_window.init_offset_input.text())
+            options.initoffset = int(self.options_window.init_offset_input.text())
 
         if not self.options_window.default_init_span.isChecked():
-            self.options.initspan = int(self.options_window.init_span_input.text())
+            options.initspan = int(self.options_window.init_span_input.text())
 
         if not self.options_window.default_vspan.isChecked():
-            self.options.vspan = int(self.options_window.vspan_input.text())
+            options.vspan = int(self.options_window.vspan_input.text())
+        return options
 
     def change_mode(self):
         if self.dark_mode.isChecked():

@@ -65,9 +65,11 @@ class PSO(object):
         self.objfunc = objfunc
         self.init_population()
 
-    def optimize(self):
+    def optimize(self, logfunc=None):
         """
         Optimizes the objective function
+        Arguments:
+            logfunc(Function): Function which is called every 10 iterations
         Returns:
             Array which is consisted of: 1. Global best evaluation
                                          2. Global best position
@@ -81,7 +83,10 @@ class PSO(object):
             for particle in self.particles:
                 particle.update(w, cp, cg, self.objfunc, self.options.vmax)
             if self.options.log and iteration % 10 == 0:
-                print(f"Iter #{iteration}, GBEST: {Particle.global_best}")
+                if logfunc:
+                    logfunc(iteration, Particle.global_best)
+                else:
+                    print("Iter #{}, GBEST: {}".format(iteration, Particle.global_best))
             history[iteration-1] = Particle.global_best
         return [Particle.global_best, Particle.global_best_position, history]
 

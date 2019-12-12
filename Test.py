@@ -91,7 +91,7 @@ def benchmark_michalewicz():
     options.initspan = 0.5
     options.initoffset = 1.7
     options.log = True
-    options.plot = False
+    options.plot = True
     pso = PSO(michalewicz, d, options)
     result = pso.optimize()
     print("Gopt: {}".format(result[0]))
@@ -125,6 +125,12 @@ def benchmark_easom():
         plt.xlabel("Iteration")
         plt.ylabel("Global best")
         plt.show()
+
+
+def benchmark(objfunc, funcname, dimension, options, logfunc=None):
+    pso = PSO(objfunc, dimension, options)
+    result = pso.optimize(logfunc)
+    return result[0], result[1], result[2]
 
 
 if __name__ == '__main__':

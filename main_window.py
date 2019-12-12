@@ -25,14 +25,18 @@ import sys
 from window import Window
 from log_window import LogWindow
 from math import inf
+from Benchmark import ackley, griewank, michalewicz, easom
+from PSO import PSO
 
 
 class MainWindow(QMainWindow):
     """
     Class that combines options windows and log window.
     """
+
     def __init__(self):
         super(MainWindow, self).__init__()
+        self.functions = [ackley, griewank, michalewicz, easom]
 
         self.options_window = Window()
         self.scroll_area = QScrollArea()
@@ -61,74 +65,41 @@ class MainWindow(QMainWindow):
         self.log_window.run_btn.clicked.connect(self.create_options)
 
     def create_options(self):
+        self.options = PSO.Options()
+        self.options.plot = self.options_window.plot_box.isChecked()
+        self.options.log = self.options_window.log_box.isChecked()
+        self.dimension = self.options_window.spin_box.value()
+        self.function = self.functions[self.options_window.combo_box.currentIndex()]
 
-        npart = 0
-        niter = 0
-        cpi = 0
-        cpf = 0
-        cgi = 0
-        cgf = 0
-        wi = 0
-        wf = 0
-        vmax = 0
-        initoffset = 0
-        initspan = 0
-        vspan = 0
+        if not self.options_window.default_npart.isChecked():
+            self.options.npart = int(self.options_window.npart_input.text())
 
-        plot = self.options_window.plot_box.isChecked()
-        log = self.options_window.log_box.isChecked()
-        dimension = self.options_window.spin_box.value()
-        if self.options_window.default_npart.isChecked():
-            npart = 30
-        else:
-            npart = int(self.options_window.npart_input.text())
+        if not self.options_window.default_niter.isChecked():
+            self.options.niter = int(self.options_window.niter_input.text())
 
-        if self.options_window.default_niter.isChecked():
-            niter = 100
-        else:
-            niter = int(self.options_window.niter_input.text())
+        if not self.options_window.default_ind_best.isChecked():
+            self.options.cpi = float(self.options_window.ind_best_start_input.text())
+            self.options.cpf = float(self.options_window.ind_best_end_input.text())
 
-        if self.options_window.default_ind_best.isChecked():
-            cpi = 2.5
-            cpf = 0.5
-        else:
-            cpi = float(self.options_window.ind_best_start_input.text())
-            cpf = float(self.options_window.ind_best_end_input.text())
+        if not self.options_window.default_global_best.isChecked():
+            self.options.cgi = float(self.options_window.global_best_start_input.text())
+            self.options.cgf = float(self.options_window.global_best_end_input.text())
 
-        if self.options_window.default_global_best.isChecked():
-            cgi = 0.5
-            cgf = 2.5
-        else:
-            cgi = float(self.options_window.global_best_start_input.text())
-            cgf = float(self.options_window.global_best_end_input.text())
+        if not self.options_window.default_inertia.isChecked():
+            self.options.wi = float(self.options_window.inertia_start_input.text())
+            self.options.wf = float(self.options_window.inertia_end_input.text())
 
-        if self.options_window.default_inertia.isChecked():
-            wi = 0.9
-            wf = 0.4
-        else:
-            wi = float(self.options_window.inertia_start_input.text())
-            wf = float(self.options_window.inertia_end_input.text())
+        if not self.options_window.default_v_max.isChecked():
+            self.options.vmax = int(self.options_window.v_max_input.text())
 
-        if self.options_window.default_v_max.isChecked():
-            vmax = inf
-        else:
-            vmax = int(self.options_window.v_max_input.text())
+        if not self.options_window.default_init_offset.isChecked():
+            self.options.initoffset = int(self.options_window.init_offset_input.text())
 
-        if self.options_window.default_init_offset.isChecked():
-            initoffset = 0
-        else:
-            initoffset = int(self.options_window.init_offset_input.text())
+        if not self.options_window.default_init_span.isChecked():
+            self.options.initspan = int(self.options_window.init_span_input.text())
 
-        if self.options_window.default_init_span.isChecked():
-            initspan = 1
-        else:
-            initspan = int(self.options_window.init_span_input.text())
-
-        if self.options_window.default_vspan.isChecked():
-            vspan = 1
-        else:
-            vspan = int(self.options_window.vspan_input.text())
-
+        if not self.options_window.default_vspan.isChecked():
+            self.options.vspan = int(self.options_window.vspan_input.text())
 
 
 if __name__ == '__main__':

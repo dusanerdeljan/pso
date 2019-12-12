@@ -45,6 +45,12 @@ class MainWindow(QMainWindow):
         self.scroll_area.setWidgetResizable(False)
         self.scroll_area.setWidget(self.options_window)
 
+        self.menubar = self.menuBar()
+        self.view_menu = self.menubar.addMenu("View")
+        self.dark_mode = self.view_menu.addAction("Dark mode")
+        self.dark_mode.setCheckable(True)
+        self.dark_mode.triggered.connect(self.change_mode)
+
         self.docked = QDockWidget("Log window", self)
         self.addDockWidget(Qt.RightDockWidgetArea, self.docked)
         self.log_window = LogWindow()
@@ -63,6 +69,7 @@ class MainWindow(QMainWindow):
 
         self.log_window.clear_btn.clicked.connect(lambda: self.log_window.text_area.clear())
         self.log_window.run_btn.clicked.connect(self.create_options)
+        self.setStyleSheet("background-color: #FFFFFF; color: black;")
 
     def create_options(self):
         self.options = PSO.Options()
@@ -100,6 +107,17 @@ class MainWindow(QMainWindow):
 
         if not self.options_window.default_vspan.isChecked():
             self.options.vspan = int(self.options_window.vspan_input.text())
+
+    def change_mode(self):
+        if self.dark_mode.isChecked():
+            self.setStyleSheet("background-color: #2D2D30; color: white;")
+            self.options_window.setStyleSheet("background-color: #2D2D30; color: white;")
+            self.log_window.setStyleSheet("background-color: #2D2D30; color: white;")
+        else:
+            self.setStyleSheet("background-color: #FFFFFF; color: black;")
+            self.options_window.setStyleSheet("background-color: #FFFFFF; color: black;")
+            self.log_window.setStyleSheet("background-color: #FFFFFF; color: black;")
+
 
 
 if __name__ == '__main__':

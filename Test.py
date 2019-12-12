@@ -76,20 +76,19 @@ def benchmark_griewank():
 
 def benchmark_michalewicz():
     options = PSO.Options()
-    options.npart = 40
-    options.niter = 200
+    options.npart = 400
+    options.niter = 1000
+    options.wi = 0.7
     options.log = False
     d = 10
 
     # Test Michalewicz funkcija
     # y* = -9.66015 za d=10
     print("\nMichalewicz")
-    options.initspan = pi / 2 - 0.0001
-    options.initoffset = pi / 2
-    options.niter = 3130
-    options.npart = 1000
+    options.initspan = 0.5
+    options.initoffset = 1.7
     options.log = True
-    options.plot = True
+    options.plot = False
     pso = PSO(michalewicz, d, options)
     result = pso.optimize()
     print("Gopt: {}".format(result[0]))
@@ -128,8 +127,8 @@ def benchmark_easom():
 if __name__ == '__main__':
     benchmark_ackley()
     benchmark_griewank()
-    benchmark_easom()
-    #benchmark_michalewicz()
+    #benchmark_easom()
+    benchmark_michalewicz()
 
 
 

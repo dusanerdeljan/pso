@@ -77,8 +77,11 @@ def benchmark_griewank():
 def benchmark_michalewicz():
     options = PSO.Options()
     options.npart = 400
-    options.niter = 1000
+    options.niter = 500
     options.wi = 0.7
+    options.wf = 0.55015
+    options.cgf = 1.50
+    options.cpf = 1.50
     options.log = False
     d = 10
 

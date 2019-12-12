@@ -55,6 +55,7 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea, self.docked)
         self.log_window = LogWindow()
         self.docked.setWidget(self.log_window)
+        self.docked.setTitleBarWidget(QLabel("<center>Log window</center>"))
         self.docked.setFeatures(QDockWidget.DockWidgetFloatable |
                                 QDockWidget.DockWidgetMovable)
 

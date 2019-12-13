@@ -67,7 +67,7 @@ class Particle(object):
             rp = uniform(0, 1)
             rg = uniform(0, 1)
             self.v[i] = w * self.v[i] + rp * cp * (self.personal_best_position[i] - self.position[i]) + rg * cg * (
-                        Particle.global_best_position[i] - self.position[i])
+                    Particle.global_best_position[i] - self.position[i])
             sign = 1 if self.v[i] > 0 else -1
             self.v[i] = min(vmax, abs(self.v[i])) * sign
             self.position[i] = self.position[i] + self.v[i]
@@ -79,4 +79,4 @@ class Particle(object):
         Returns:
             String representation of the particle
         """
-        return f"Position: {self.position}, value: {self.value}, personal best: {self.personal_best}"
+        return "Position: {}, value: {}, personal best: {}".format(self.position, self.value, self.personal_best)

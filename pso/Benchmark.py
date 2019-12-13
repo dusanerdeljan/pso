@@ -35,11 +35,11 @@ def ackley(x):
     s2 = 0
     d = len(x)
     for xi in x:
-        s1 += xi**2
-        s2 += cos(2*pi*xi)
-    s1 = -0.2*sqrt((1/d)*s1)
-    s2 = (1/d)*s2
-    return -20*exp(s1) - exp(s2) + 20 + exp(1)
+        s1 += xi ** 2
+        s2 += cos(2 * pi * xi)
+    s1 = -0.2 * sqrt((1 / d) * s1)
+    s2 = (1 / d) * s2
+    return -20 * exp(s1) - exp(s2) + 20 + exp(1)
 
 
 def griewank(x):
@@ -54,10 +54,9 @@ def griewank(x):
     p2 = 1
     d = len(x)
     for i in range(d):
-        s1 += (x[i]**2)/4000
-        p2 *= cos(x[i]/(sqrt(i+1)))
+        s1 += (x[i] ** 2) / 4000
+        p2 *= cos(x[i] / (sqrt(i + 1)))
     return s1 - p2 + 1
-
 
 
 def michalewicz(x):
@@ -71,7 +70,7 @@ def michalewicz(x):
     s1 = 0
     d = len(x)
     for i in range(d):
-        s1 += sin(x[i])*(sin((x[i]**2 * (i+1))/pi))**20
+        s1 += sin(x[i]) * (sin((x[i] ** 2 * (i + 1)) / pi)) ** 20
     return -s1
 
 
@@ -91,6 +90,22 @@ def benchmark_ackley():
     # Test Ackley funkcije
     # x*=[0 0 0 ... 0], y* = 0
     print("Ackley")
+    # data = [0]*10
+    # positions = [[]]*10
+    # for i in range(10):
+    #     print(i)
+    #     pso = PSO(ackley, d, options)
+    #     result = pso.optimize()
+    #     data[i] = result[0]
+    #     positions[i] = result[1]
+    # avg = sum(data)/10
+    # avg_pos = [sum(x)/10 for x in positions]
+    # plt.scatter([i for i in range(1, 11)], data, marker='x')
+    # plt.text(1, 0.006, "Prosečno f(x*): {:.5f}\n\nProsečno x*: [{}]".format(avg, ", ".join("{:.2f}".format(x) for x in avg_pos)))
+    # plt.title("Optimizacije Ackley funkcije")
+    # plt.xlabel("Redni broj optimizacije")
+    # plt.ylabel("Globalni optimum")
+    # plt.show()
     pso = PSO(ackley, d, options)
     result = pso.optimize()
     print("Gopt: {}".format(result[0]))
@@ -113,6 +128,22 @@ def benchmark_griewank():
     # Test Griewank funkcije
     # x*=[0 0 0 ... 0], y* = 0
     print("\nGriewank")
+    # data = [0]*10
+    # positions = [[]]*10
+    # for i in range(10):
+    #     print(i)
+    #     pso = PSO(griewank, d, options)
+    #     result = pso.optimize()
+    #     data[i] = result[0]
+    #     positions[i] = result[1]
+    # avg = sum(data)/10
+    # avg_pos = [sum(x)/10 for x in positions]
+    # plt.scatter([i for i in range(1, 11)], data, marker='x')
+    # plt.text(1, 0.006, "Prosečno f(x*): {:.5f}\n\nProsečno x*: [{}]".format(avg, ", ".join("{:.2f}".format(x) for x in avg_pos)))
+    # plt.title("Optimizacije Griewank funkcije")
+    # plt.xlabel("Redni broj optimizacije")
+    # plt.ylabel("Globalni optimum")
+    # plt.show()
     pso = PSO(griewank, d, options)
     result = pso.optimize()
     print("Gopt: {}".format(result[0]))
@@ -141,6 +172,23 @@ def benchmark_michalewicz():
     print("\nMichalewicz")
     options.initspan = 0.4
     options.initoffset = 1.7
+    # data = [0] * 10
+    # positions = [[]] * 10
+    # for i in range(10):
+    #     print(i)
+    #     pso = PSO(michalewicz, d, options)
+    #     result = pso.optimize()
+    #     data[i] = result[0]
+    #     positions[i] = result[1]
+    # avg = sum(data) / 10
+    # avg_pos = [sum(x) / 10 for x in positions]
+    # plt.scatter([i for i in range(1, 11)], data, marker='x')
+    # plt.text(1, -9.62,
+    #          "Prosečno f(x*): {:.5f}\n\nProsečno x*: [{}]".format(avg, ", ".join("{:.2f}".format(x) for x in avg_pos)))
+    # plt.title("Optimizacije Michalewicz funkcije")
+    # plt.xlabel("Redni broj optimizacije")
+    # plt.ylabel("Globalni optimum")
+    # plt.show()
     options.log = True
     options.plot = False
     pso = PSO(michalewicz, d, options)
@@ -177,4 +225,3 @@ if __name__ == '__main__':
     benchmark_ackley()
     benchmark_griewank()
     benchmark_michalewicz()
-

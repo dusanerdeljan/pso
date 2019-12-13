@@ -71,16 +71,17 @@ class MainWindow(QMainWindow):
         self.setFixedHeight(500)
 
         self.setCentralWidget(self.scroll_area)
-        self.setWindowTitle("PSO optimization")
+        self.setWindowTitle("Continuous function optimization using PSO algorithm")
         self.show()
 
         self.log_window.clear_btn.clicked.connect(lambda: self.log_window.text_area.clear())
-        #self.log_window.run_btn.clicked.connect(self.create_options)
         self.log_window.run_btn.clicked.connect(self.start_thread)
         self.setStyleSheet("background-color: #FFFFFF; color: black;")
+        self.dark_mode.trigger()
 
     def log_pso_algorithm(self, iteration, global_best):
-        self.log_window.text_area.append("Iter #{}, GBEST: {}".format(iteration, global_best))
+        self.text_update_needed.emit("Iter #{}, GBEST: {}".format(iteration, global_best))
+
 
     def create_options(self):
         # self.log_window.text_area.clear()
@@ -96,9 +97,9 @@ class MainWindow(QMainWindow):
         # self.log_window.text_area.append("Optimization process finished.")
         self.text_update_needed.emit("Optimization process finished.")
         # self.log_window.text_area.append("f(x*) = {}".format(global_best))
-        self.text_update_needed.emit("f(x*) = {}".format(global_best))
+        self.text_update_needed.emit("\nf(x*) = {}".format(global_best))
         # self.log_window.text_area.append("x* = ")
-        self.text_update_needed.emit("x* = ")
+        self.text_update_needed.emit("\nx* = \n")
         for x in global_best_position:
             # self.log_window.text_area.append("  {}".format(x))
             self.text_update_needed.emit("  {}".format(x))
@@ -133,16 +134,16 @@ class MainWindow(QMainWindow):
             options.wf = float(self.options_window.inertia_end_input.text())
 
         if not self.options_window.default_v_max.isChecked():
-            options.vmax = int(self.options_window.v_max_input.text())
+            options.vmax = float(self.options_window.v_max_input.text())
 
         if not self.options_window.default_init_offset.isChecked():
-            options.initoffset = int(self.options_window.init_offset_input.text())
+            options.initoffset = float(self.options_window.init_offset_input.text())
 
         if not self.options_window.default_init_span.isChecked():
-            options.initspan = int(self.options_window.init_span_input.text())
+            options.initspan = float(self.options_window.init_span_input.text())
 
         if not self.options_window.default_vspan.isChecked():
-            options.vspan = int(self.options_window.vspan_input.text())
+            options.vspan = float(self.options_window.vspan_input.text())
         return options
 
     def change_mode(self):
@@ -159,6 +160,8 @@ class MainWindow(QMainWindow):
 
     def update_text(self, text):
         self.log_window.text_area.append(text)
+        self.log_window.text_area.moveCursor(QTextCursor.End)
+        self.log_window.text_area.ensureCursorVisible()
 
     def start_thread(self):
         self.c_thread = threading.Thread(target=self.create_options)

@@ -44,7 +44,7 @@ class PSO(object):
             self.initspan = 1
             self.vspan = 1
             self.plot = False
-            self.log = False
+            self.log = True
 
     def __init__(self, objfunc, dimension, opts=None):
         """

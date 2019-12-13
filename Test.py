@@ -88,10 +88,10 @@ def benchmark_michalewicz():
     # Test Michalewicz funkcija
     # y* = -9.66015 za d=10
     print("\nMichalewicz")
-    options.initspan = 0.5
+    options.initspan = 0.4
     options.initoffset = 1.7
     options.log = True
-    options.plot = True
+    options.plot = False
     pso = PSO(michalewicz, d, options)
     result = pso.optimize()
     print("Gopt: {}".format(result[0]))

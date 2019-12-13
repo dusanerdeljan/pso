@@ -34,12 +34,6 @@ class LogWindow(QWidget):
         self.clear_btn = QPushButton("Clear")
         self.run_btn = QPushButton("Run")
 
-        self.scroll_area = QScrollArea()
-        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.scroll_area.setWidgetResizable(False)
-        self.scroll_area.setWidget(self.text_area)
-
         v_box = QVBoxLayout()
         v_box.addWidget(self.text_area)
         h1 = QHBoxLayout()

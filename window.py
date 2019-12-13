@@ -19,6 +19,7 @@
 """
 
 from PyQt5.QtWidgets import *
+from PSO import PSO
 import sys
 
 
@@ -31,7 +32,8 @@ class Window(QWidget):
     def __init__(self):
         super(Window, self).__init__()
         self.options_label = QLabel("Options")
-        self.options_label.setStyleSheet("font: 14pt Times New Roman")
+        self.options_label.setStyleSheet("font: 14pt Sans Serif")
+        self.options = PSO.Options()
 
         separators = []
 
@@ -43,7 +45,7 @@ class Window(QWidget):
             separators.append(s)
 
         h1 = QHBoxLayout()
-        self.default_npart = QRadioButton("Use default (30)")
+        self.default_npart = QRadioButton("Use default ({})".format(self.options.npart))
         self.default_npart.setChecked(True)
         self.other_npart = QRadioButton("Other")
         self.npart_input = QLineEdit()
@@ -58,7 +60,7 @@ class Window(QWidget):
         self.default_npart.toggled.connect(lambda: self.npart_input.setDisabled(True))
 
         h2 = QHBoxLayout()
-        self.default_niter = QRadioButton("Use default (100)")
+        self.default_niter = QRadioButton("Use default ({})".format(self.options.niter))
         self.default_niter.setChecked(True)
         self.other_niter = QRadioButton("Other")
         self.niter_input = QLineEdit()
@@ -73,7 +75,7 @@ class Window(QWidget):
         self.default_niter.toggled.connect(lambda: self.niter_input.setDisabled(True))
 
         h3 = QHBoxLayout()
-        self.default_ind_best = QRadioButton("Use default (2.5 and 0.5)")
+        self.default_ind_best = QRadioButton("Use default ({} and {})".format(self.options.cpi, self.options.cpf))
         self.default_ind_best.setChecked(True)
         self.other_ind_best = QRadioButton("Other")
         self.ind_best_start_input = QLineEdit()
@@ -95,7 +97,7 @@ class Window(QWidget):
         self.default_ind_best.toggled.connect(lambda: self.ind_best_end_input.setDisabled(True))
 
         h4 = QHBoxLayout()
-        self.default_global_best = QRadioButton("Use default (0.5 and 2.5)")
+        self.default_global_best = QRadioButton("Use default ({} and {})".format(self.options.cgi, self.options.cgf))
         self.default_global_best.setChecked(True)
         self.other_global_best = QRadioButton("Other")
         self.global_best_start_input = QLineEdit()
@@ -117,7 +119,7 @@ class Window(QWidget):
         self.default_global_best.toggled.connect(lambda: self.global_best_end_input.setDisabled(True))
 
         h5 = QHBoxLayout()
-        self.default_inertia = QRadioButton("Use default (0.9 and 0.4)")
+        self.default_inertia = QRadioButton("Use default ({} and {})".format(self.options.wi, self.options.wf))
         self.default_inertia.setChecked(True)
         self.other_inertia = QRadioButton("Other")
         self.inertia_start_input = QLineEdit()
@@ -139,7 +141,7 @@ class Window(QWidget):
         self.default_inertia.toggled.connect(lambda: self.inertia_end_input.setDisabled(True))
 
         h6 = QHBoxLayout()
-        self.default_v_max = QRadioButton("Use default (inf)")
+        self.default_v_max = QRadioButton("Use default ({})".format(self.options.vmax))
         self.default_v_max.setChecked(True)
         self.other_v_max = QRadioButton("Other")
         self.v_max_input = QLineEdit()
@@ -154,7 +156,7 @@ class Window(QWidget):
         self.default_v_max.toggled.connect(lambda: self.v_max_input.setDisabled(True))
 
         h7 = QHBoxLayout()
-        self.default_init_offset = QRadioButton("Use default (0)")
+        self.default_init_offset = QRadioButton("Use default ({})".format(self.options.initoffset))
         self.default_init_offset.setChecked(True)
         self.other_init_offset = QRadioButton("Other")
         self.init_offset_input = QLineEdit()
@@ -169,7 +171,7 @@ class Window(QWidget):
         self.other_init_offset.toggled.connect(lambda: self.init_offset_input.setDisabled(False))
 
         h8 = QHBoxLayout()
-        self.default_init_span = QRadioButton("Use default (1)")
+        self.default_init_span = QRadioButton("Use default ({})".format(self.options.initspan))
         self.default_init_span.setChecked(True)
         self.other_init_span = QRadioButton("Other")
         self.init_span_input = QLineEdit()
@@ -184,7 +186,7 @@ class Window(QWidget):
         self.other_init_span.toggled.connect(lambda: self.init_span_input.setDisabled(False))
 
         h9 = QHBoxLayout()
-        self.default_vspan = QRadioButton("Use default (1)")
+        self.default_vspan = QRadioButton("Use default ({})".format(self.options.vspan))
         self.other_vspan = QRadioButton("Other")
         self.default_vspan.setChecked(True)
         self.vspan_input = QLineEdit()
@@ -197,7 +199,9 @@ class Window(QWidget):
 
         h10 = QHBoxLayout()
         self.plot_box = QCheckBox("Plot")
+        self.plot_box.setChecked(self.options.plot)
         self.log_box = QCheckBox("Log")
+        self.log_box.setChecked(self.options.log)
         h10.addWidget(self.plot_box)
         h10.addWidget(self.log_box)
 

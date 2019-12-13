@@ -21,6 +21,7 @@
 from PyQt5 import Qt
 from PyQt5.Qt import *
 from PyQt5.QtGui import *
+from PyQt5.QtCore import pyqtSignal
 import sys
 from window import Window
 from log_window import LogWindow
@@ -29,16 +30,22 @@ from Benchmark import ackley, griewank, michalewicz, easom
 import matplotlib.pyplot as plt
 from PSO import PSO
 from Test import benchmark
+import threading
 
 
 class MainWindow(QMainWindow):
     """
     Class that combines options windows and log window.
+    text_update_needed: signal which is emitted when log window needs a text update during the algorithm execution,
+    because otherwise text isn't updated in real time
     """
+    text_update_needed = pyqtSignal(str)
 
     def __init__(self):
         super(MainWindow, self).__init__()
         self.functions = [ackley, griewank, michalewicz]
+
+        self.text_update_needed.connect(self.update_text)
 
         self.options_window = Window()
         self.scroll_area = QScrollArea()
@@ -57,11 +64,9 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea, self.docked)
         self.log_window = LogWindow()
         self.docked.setWidget(self.log_window)
-        # self.docked.setTitleBarWidget(QLabel("<center>Log window</center>"))
         self.docked.setFeatures(QDockWidget.NoDockWidgetFeatures)
 
         self.docked.setMinimumWidth(300)
-        # self.docked.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
         self.setMinimumHeight(400)
         self.setFixedHeight(500)
 
@@ -70,26 +75,33 @@ class MainWindow(QMainWindow):
         self.show()
 
         self.log_window.clear_btn.clicked.connect(lambda: self.log_window.text_area.clear())
-        self.log_window.run_btn.clicked.connect(self.create_options)
+        #self.log_window.run_btn.clicked.connect(self.create_options)
+        self.log_window.run_btn.clicked.connect(self.start_thread)
         self.setStyleSheet("background-color: #FFFFFF; color: black;")
 
     def log_pso_algorithm(self, iteration, global_best):
         self.log_window.text_area.append("Iter #{}, GBEST: {}".format(iteration, global_best))
 
     def create_options(self):
-        self.log_window.text_area.clear()
-        self.log_window.text_area.append("Optimization process started. Please wait...")
+        # self.log_window.text_area.clear()
+        # self.log_window.text_area.append("Optimization process started. Please wait...")
+        self.text_update_needed.emit("Optimization process started. Please wait...")
         dimension = self.options_window.spin_box.value()
         objfunc = self.functions[self.options_window.combo_box.currentIndex()]
         function = self.options_window.combo_box.currentText()
         options = self.load_options()
 
-        global_best, global_best_position, history = benchmark(objfunc, function, dimension, options, self.log_pso_algorithm)
-        self.log_window.text_area.append("Optimization process finished.")
-        self.log_window.text_area.append("f(x*) = {}".format(global_best))
-        self.log_window.text_area.append("x* = ")
+        global_best, global_best_position, history = benchmark(objfunc, function, dimension, options,
+                                                               self.log_pso_algorithm)
+        # self.log_window.text_area.append("Optimization process finished.")
+        self.text_update_needed.emit("Optimization process finished.")
+        # self.log_window.text_area.append("f(x*) = {}".format(global_best))
+        self.text_update_needed.emit("f(x*) = {}".format(global_best))
+        # self.log_window.text_area.append("x* = ")
+        self.text_update_needed.emit("x* = ")
         for x in global_best_position:
-            self.log_window.text_area.append("  {}".format(x))
+            # self.log_window.text_area.append("  {}".format(x))
+            self.text_update_needed.emit("  {}".format(x))
 
         if options.plot:
             plt.scatter([_ for _ in range(1, options.niter + 1)], history, marker='x')
@@ -144,6 +156,13 @@ class MainWindow(QMainWindow):
             self.options_window.setStyleSheet("background-color: #FFFFFF; color: black;")
             self.log_window.setStyleSheet("background-color: #FFFFFF; color: black;")
             self.docked.setStyleSheet("background-color: #FFFFFF; color: black;")
+
+    def update_text(self, text):
+        self.log_window.text_area.append(text)
+
+    def start_thread(self):
+        self.c_thread = threading.Thread(target=self.create_options)
+        self.c_thread.start()
 
 
 if __name__ == '__main__':

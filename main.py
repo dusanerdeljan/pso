@@ -23,6 +23,9 @@ from gui.MainWindow import MainWindow
 import sys
 
 if __name__ == '__main__':
+    """
+    Entry point
+    """
     QApplication.setStyle("Fusion")
     app = QApplication(sys.argv)
     w = MainWindow()

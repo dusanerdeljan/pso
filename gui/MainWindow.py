@@ -28,6 +28,7 @@ from pso.PSO import PSO
 from pso.Benchmark import benchmark, ackley, griewank, michalewicz
 import threading
 import matplotlib.pyplot as plt
+from math import inf
 
 
 class MainWindow(QMainWindow):
@@ -37,12 +38,14 @@ class MainWindow(QMainWindow):
     because otherwise text isn't updated in real time
     """
     text_update_needed = pyqtSignal(str)
+    error_message = pyqtSignal(str)
 
     def __init__(self):
         super(MainWindow, self).__init__()
         self.functions = [ackley, griewank, michalewicz]
 
         self.text_update_needed.connect(self.update_text)
+        self.error_message.connect(self.show_error_message)
 
         self.options_window = OptionsWindow()
         self.scroll_area = QScrollArea()
@@ -89,11 +92,15 @@ class MainWindow(QMainWindow):
         """
         Starts the optimization process. Plots a graph if plot option is enabled
         """
-        self.text_update_needed.emit("Optimization process started. Please wait...")
         dimension = self.options_window.spin_box.value()
         objfunc = self.functions[self.options_window.combo_box.currentIndex()]
         function = self.options_window.combo_box.currentText()
         options = self.load_options()
+        if not options:
+            return
+        self.text_update_needed.emit("Optimization process started. Please wait...")
+        self.log_window.run_btn.setDisabled(True)
+        self.log_window.clear_btn.setDisabled(True)
 
         global_best, global_best_position, history = benchmark(objfunc, dimension, options, self.log_pso_algorithm)
         self.text_update_needed.emit("Optimization process finished.")
@@ -109,49 +116,107 @@ class MainWindow(QMainWindow):
             plt.ylabel("Global best")
             plt.show()
 
+        self.log_window.run_btn.setEnabled(True)
+        self.log_window.clear_btn.setEnabled(True)
+
+    def show_error_message(self, text, title="Invalid parameter value"):
+        """
+        Displays error message box
+        Arguments:
+            text(str): Error description
+            title(str): Error title
+        """
+        msg = QMessageBox()
+        msg.setStyleSheet("background-color: #2D2D30; color: white;")
+        msg.setModal(True)
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText(text)
+        msg.setWindowTitle(title)
+        msg.exec_()
+
     def load_options(self):
         """
-        Loads user defined algorithm options
+        Loads user defined algorithm options and checks if options are valid
         Returns:
-            options(PSO.Options): User defined options
+            options(PSO.Options): User defined options, None if the options are invalid
         """
         options = PSO.Options()
         options.plot = self.options_window.plot_box.isChecked()
         options.log = self.options_window.log_box.isChecked()
         if not self.options_window.default_npart.isChecked():
-            options.npart = int(self.options_window.npart_input.text())
+            try:
+                options.npart = int(self.options_window.npart_input.text())
+            except ValueError:
+                self.error_message.emit("Number of particles must be an integer value.")
+                return None
 
         if not self.options_window.default_niter.isChecked():
-            options.niter = int(self.options_window.niter_input.text())
+            try:
+                options.niter = int(self.options_window.niter_input.text())
+            except ValueError:
+                self.error_message.emit("Number of iterations must be an integer value.")
+                return None
 
         if not self.options_window.default_ind_best.isChecked():
-            options.cpi = float(self.options_window.ind_best_start_input.text())
-            options.cpf = float(self.options_window.ind_best_end_input.text())
+            try:
+                options.cpi = float(self.options_window.ind_best_start_input.text())
+                options.cpf = float(self.options_window.ind_best_end_input.text())
+            except ValueError:
+                self.error_message.emit("Cp initial and/or final must be a real value.")
+                return None
 
         if not self.options_window.default_global_best.isChecked():
-            options.cgi = float(self.options_window.global_best_start_input.text())
-            options.cgf = float(self.options_window.global_best_end_input.text())
+            try:
+                options.cgi = float(self.options_window.global_best_start_input.text())
+                options.cgf = float(self.options_window.global_best_end_input.text())
+            except ValueError:
+                self.error_message.emit("Cg initial and/or final must be a real value")
+                return None
 
         if not self.options_window.default_inertia.isChecked():
-            options.wi = float(self.options_window.inertia_start_input.text())
-            options.wf = float(self.options_window.inertia_end_input.text())
+            try:
+                options.wi = float(self.options_window.inertia_start_input.text())
+                options.wf = float(self.options_window.inertia_end_input.text())
+            except ValueError:
+                self.error_message.emit("Inertia factor initial and/or final must be a real value")
+                return None
 
         if not self.options_window.default_v_max.isChecked():
-            options.vmax = float(self.options_window.v_max_input.text())
+            try:
+                options.vmax = float(self.options_window.v_max_input.text())
+            except ValueError:
+                if self.options_window.v_max_input.text().lower() == "inf":
+                    options.vmax = inf
+                else:
+                    self.error_message.emit("Absolute max speed must be a real value.")
+                    return None
 
         if not self.options_window.default_init_offset.isChecked():
-            options.initoffset = float(self.options_window.init_offset_input.text())
+            try:
+                options.initoffset = float(self.options_window.init_offset_input.text())
+            except ValueError:
+                self.error_message.emit("Initial population span must be a real value")
+                return None
 
         if not self.options_window.default_init_span.isChecked():
-            options.initspan = float(self.options_window.init_span_input.text())
+            try:
+                options.initspan = float(self.options_window.init_span_input.text())
+            except ValueError:
+                self.error_message.emit("Initial population offset must be a real value.")
+                return None
 
         if not self.options_window.default_vspan.isChecked():
-            options.vspan = float(self.options_window.vspan_input.text())
+            try:
+                options.vspan = float(self.options_window.vspan_input.text())
+            except ValueError:
+                self.error_message.emit("Initial velocity span must be a real value.")
+                return None
+
         return options
 
     def change_mode(self):
         """
-        Event handler for change mode actions. Changes the theme from dark to white and vice versa
+        Event handler for change mode action. Changes the theme from dark to white and vice versa
         """
         if self.dark_mode.isChecked():
             self.setStyleSheet("background-color: #2D2D30; color: white;")

@@ -39,6 +39,7 @@ class MainWindow(QMainWindow):
     """
     text_update_needed = pyqtSignal(str)
     error_message = pyqtSignal(str)
+    plot_requested = pyqtSignal(PSO.Options, list, str)
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -46,6 +47,7 @@ class MainWindow(QMainWindow):
 
         self.text_update_needed.connect(self.update_text)
         self.error_message.connect(self.show_error_message)
+        self.plot_requested.connect(self.show_plot)
 
         self.options_window = OptionsWindow()
         self.scroll_area = QScrollArea()
@@ -110,14 +112,24 @@ class MainWindow(QMainWindow):
             self.text_update_needed.emit("  {}".format(x))
 
         if options.plot:
-            plt.scatter([_ for _ in range(1, options.niter + 1)], history, marker='x')
-            plt.title("{} function".format(function))
-            plt.xlabel("Iteration")
-            plt.ylabel("Global best")
-            plt.show()
+            self.plot_requested.emit(options, history, function)
 
         self.log_window.run_btn.setEnabled(True)
         self.log_window.clear_btn.setEnabled(True)
+
+    def show_plot(self, options, history, function):
+        """
+        Creates a plot which shows global optimum throughout the iterations of the optimization process
+        Arguments:
+            options(PSO.Options): Options used for the optimization
+            history(list): List of global optimums throughout the iterations
+            function(str): Name of the objective function
+        """
+        plt.scatter([_ for _ in range(1, options.niter + 1)], history, marker='x')
+        plt.title("{} function".format(function))
+        plt.xlabel("Iteration")
+        plt.ylabel("Global best")
+        plt.show()
 
     def show_error_message(self, text, title="Invalid parameter value"):
         """

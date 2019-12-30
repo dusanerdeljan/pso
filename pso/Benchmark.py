@@ -75,6 +75,9 @@ def michalewicz(x):
 
 
 def benchmark_ackley():
+    """
+    Optimizes Ackley function
+    """
     options = PSO.Options()
     options.wi = 0.6
     options.wf = 0.6
@@ -119,6 +122,9 @@ def benchmark_ackley():
 
 
 def benchmark_griewank():
+    """
+    Optimizes Griewank function
+    """
     options = PSO.Options()
     options.npart = 40
     options.niter = 200
@@ -157,6 +163,9 @@ def benchmark_griewank():
 
 
 def benchmark_michalewicz():
+    """
+    Optimizes Michalewicz function
+    """
     options = PSO.Options()
     options.npart = 400
     options.niter = 500

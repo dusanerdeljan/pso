@@ -63,7 +63,6 @@ class PSO(object):
         self.particles = None
         self.dimension = dimension
         self.objfunc = objfunc
-        self.init_population()
 
     def optimize(self, logfunc=None):
         """
@@ -75,6 +74,7 @@ class PSO(object):
                                          2. Global best position
                                          3. History of the global best evaluations throughout the iterations
         """
+        self.init_population()
         history = [0.0]*self.options.niter
         for iteration in range(1, self.options.niter+1):
             w = self.linrate_w(iteration)
